@@ -63,10 +63,7 @@ public:
 public:
     static void InjectHooks();
 
-    void Initialise();
-    void Reset();
     static void InitialiseStaticVariables();
-
     void UpdateWantedLevel();
     static void SetMaximumWantedLevel(int level);
     bool AreMiamiViceRequired();
@@ -82,6 +79,8 @@ public:
     static void RemovePursuitCop(CCopPed* cop, CCopPed** copsArray, unsigned char& copsCounter);
     bool IsInPursuit(CCopPed* cop);
     static void UpdateEachFrame();
+    void Initialise();
+    void Reset();
     void RegisterCrime(eCrimeType crimeType, const CVector& posn, CPed* ped, bool bPoliceDontReallyCare);
     void RegisterCrime_Immediately(eCrimeType crimeType, const CVector& posn, CPed* ped, bool bPoliceDontReallyCare);
     void SetWantedLevel(unsigned int level);

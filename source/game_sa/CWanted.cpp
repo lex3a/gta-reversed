@@ -13,21 +13,40 @@ bool& CWanted::bUseNewsHeliInAdditionToPolice = *(bool*)0xB7CB8C;
 
 void CWanted::InjectHooks()
 {
+    ReversibleHooks::Install("CWanted", "InitialiseStaticVariables", 0x561C70, &CWanted::InitialiseStaticVariables);
     ReversibleHooks::Install("CWanted", "UpdateWantedLevel", 0x561C90, &CWanted::UpdateWantedLevel);
+    ReversibleHooks::Install("CWanted", "SetMaximumWantedLevel", 0x561E70, &CWanted::SetMaximumWantedLevel);
+    ReversibleHooks::Install("CWanted", "AreMiamiViceRequired", 0x561F30, &CWanted::AreMiamiViceRequired);
     ReversibleHooks::Install("CWanted", "AreSwatRequired", 0x561F40, &CWanted::AreSwatRequired);
     ReversibleHooks::Install("CWanted", "AreFbiRequired", 0x561F60, &CWanted::AreFbiRequired);
     ReversibleHooks::Install("CWanted", "AreArmyRequired", 0x561F80, &CWanted::AreArmyRequired);
-    ReversibleHooks::Install("CWanted", "InitialiseStaticVariables", 0x561C70, &CWanted::InitialiseStaticVariables);
-    ReversibleHooks::Install("CWanted", "SetMaximumWantedLevel", 0x561E70, &CWanted::SetMaximumWantedLevel);
-    ReversibleHooks::Install("CWanted", "Initialise", 0x562390, &CWanted::Initialise);
+    ReversibleHooks::Install("CWanted", "NumOfHelisRequired", 0x561FA0, &CWanted::NumOfHelisRequired);
+    ReversibleHooks::Install("CWanted", "ResetPolicePursuit", 0x561FD0, &CWanted::ResetPolicePursuit);
     ReversibleHooks::Install("CWanted", "ClearQdCrimes", 0x561FE0, &CWanted::ClearQdCrimes);
+    ReversibleHooks::Install("CWanted", "AddCrimeToQ", 0x562000, &CWanted::AddCrimeToQ);
+    ReversibleHooks::Install("CWanted", "ReportCrimeNow", 0x562120, &CWanted::ReportCrimeNow);
+    ReversibleHooks::Install("CWanted", "RemovePursuitCop_func", 0x562300, static_cast<void (*)(CCopPed*, CCopPed**, unsigned char&)>(&CWanted::RemovePursuitCop));
     ReversibleHooks::Install("CWanted", "IsInPursuit", 0x562330, &CWanted::IsInPursuit);
+    ReversibleHooks::Install("CWanted", "UpdateEachFrame", 0x562360, &CWanted::UpdateEachFrame);
+    ReversibleHooks::Install("CWanted", "Initialise", 0x562390, &CWanted::Initialise);
+    ReversibleHooks::Install("CWanted", "Reset", 0x562400, &CWanted::Reset);
+    ReversibleHooks::Install("CWanted", "RegisterCrime", 0x562410, &CWanted::RegisterCrime);
+    ReversibleHooks::Install("CWanted", "RegisterCrime_Immediately", 0x562430, &CWanted::RegisterCrime_Immediately);
     ReversibleHooks::Install("CWanted", "SetWantedLevel", 0x562470, &CWanted::SetWantedLevel);
     ReversibleHooks::Install("CWanted", "CheatWantedLevel", 0x562540, &CWanted::CheatWantedLevel);
     ReversibleHooks::Install("CWanted", "SetWantedLevelNoDrop", 0x562570, &CWanted::SetWantedLevelNoDrop);
     ReversibleHooks::Install("CWanted", "ClearWantedLevelAndGoOnParole", 0x5625A0, &CWanted::ClearWantedLevelAndGoOnParole);
+    ReversibleHooks::Install("CWanted", "WorkOutPolicePresence", 0x5625F0, &CWanted::WorkOutPolicePresence);
+    ReversibleHooks::Install("CWanted", "UpdateCrimesQ", 0x562760, &CWanted::UpdateCrimesQ);
+    ReversibleHooks::Install("CWanted", "IsClosestCop", 0x5627D0, &CWanted::IsClosestCop);
+    ReversibleHooks::Install("CWanted", "ComputePursuitCopToDisplace", 0x562B00, &CWanted::ComputePursuitCopToDisplace);
+    ReversibleHooks::Install("CWanted", "RemovePursuitCop_method", 0x562C10, static_cast<void (CWanted::*)(CCopPed*)>(&CWanted::RemovePursuitCop));
+    ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
+    ReversibleHooks::Install("CWanted", "Update", 0x562C90, &CWanted::Update);
     ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_func", 0x562F60, static_cast<bool (*)(CCopPed*, unsigned char, CCopPed**, unsigned char&)>(CWanted::CanCopJoinPursuit));
     // ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_method", 0x562FB0, static_cast<bool (CWanted::*)(CCopPed*)>(&CWanted::CanCopJoinPursuit));
+    ReversibleHooks::Install("CWanted", "SetPursuitCop", 0x563060, &CWanted::SetPursuitCop);
+
 }
 
 // 0x562390
