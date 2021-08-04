@@ -67,42 +67,42 @@ void CWanted::UpdateWantedLevel() {
     unsigned int wantedLevel = m_nWantedLevel;
 
     if (m_nChaosLevel > 4800) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(6 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(6 - wantedLevel));
         m_nWantedLevel = 6;
         m_nMaxCopCarsInPursuit = 3;
         m_nMaxCopsInPursuit = 10;
         m_nChanceOnRoadBlock = 30;
     }
     else if (m_nChaosLevel > 2400) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(5 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(5 - wantedLevel));
         m_nWantedLevel = 5;
         m_nMaxCopCarsInPursuit = 2;
         m_nMaxCopsInPursuit = 6;
         m_nChanceOnRoadBlock = 24;
     }
     else if (m_nChaosLevel > 1200) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(4 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(4 - wantedLevel));
         m_nWantedLevel = 4;
         m_nMaxCopCarsInPursuit = 2;
         m_nMaxCopsInPursuit = 6;
         m_nChanceOnRoadBlock = 18;
     }
     else if (m_nChaosLevel > 550) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(3 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(3 - wantedLevel));
         m_nWantedLevel = 3;
         m_nMaxCopCarsInPursuit = 2;
         m_nMaxCopsInPursuit = 4;
         m_nChanceOnRoadBlock = 12;
     }
     else if (m_nChaosLevel > 180) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(2 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(2 - wantedLevel));
         m_nWantedLevel = 2;
         m_nMaxCopCarsInPursuit = 2;
         m_nMaxCopsInPursuit = 3;
         m_nChanceOnRoadBlock = 0;
     }
     else if (m_nChaosLevel > 50) {
-        CStats::IncrementStat(eStats::STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(1 - wantedLevel));
+        CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(1 - wantedLevel));
         m_nWantedLevel = 1;
         m_nMaxCopCarsInPursuit = 1;
         m_nMaxCopsInPursuit = 1;
@@ -356,7 +356,7 @@ void CWanted::SetWantedLevelNoDrop(unsigned int level) {
 
 // 0x5625A0
 void CWanted::ClearWantedLevelAndGoOnParole() {
-    CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_EVADED, m_nWantedLevel);
+    CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_EVADED, (float)m_nWantedLevel);
     auto playerWanted = FindPlayerWanted(-1);
     m_nChaosLevelBeforeParole = playerWanted->m_nChaosLevel;
     m_nWantedLevelBeforeParole = playerWanted->m_nWantedLevel;
