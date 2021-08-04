@@ -49,36 +49,6 @@ void CWanted::InjectHooks()
 
 }
 
-// 0x562390
-void CWanted::Initialise() {
-    m_nFlags &= 0xC0;
-    m_nChaosLevel = 0;
-    m_nChaosLevelBeforeParole = 0;
-    m_nLastTimeWantedDecreased = 0;
-    m_nLastTimeWantedLevelChanged = 0;
-    m_nTimeOfParole = 0;
-    m_nCopsInPursuit = 0;
-    m_nMaxCopsInPursuit = 0;
-    m_nMaxCopCarsInPursuit = 0;
-    m_nChanceOnRoadBlock = 0;
-    m_fMultiplier = 1.0f;
-    m_nTimeCounting = 0;
-    m_bLeavePlayerAlone = false;
-    m_nWantedLevel = 0;
-    m_nWantedLevelBeforeParole = 0;
-    m_nCopsBeatingSuspect = 0;
-
-    for (auto& cop : m_pCopsInPursuit) {
-        cop  = nullptr;
-    }
-
-    ClearQdCrimes();
-}
-
-// 0x562400
-void CWanted::Reset() {
-    Initialise();
-}
 
 // Initialize Static Variables
 // 0x561C70
@@ -197,9 +167,10 @@ void CWanted::SetMaximumWantedLevel(int level)
     }
 }
 
-// Converted from thiscall bool CWanted::AreMiamiViceRequired(void) 0x561F30
+// Vice City leftover
+// 0x561F30
 bool CWanted::AreMiamiViceRequired() {
-    return plugin::CallMethodAndReturn<bool, 0x561F30, CWanted*>(this);
+    return m_nWantedLevel >= 3;
 }
 
 // Checks if SWAT is needed after four wanted level stars
@@ -274,6 +245,37 @@ bool CWanted::IsInPursuit(CCopPed* cop) {
 // Converted from cdecl void CWanted::UpdateEachFrame(void) 0x562360
 void CWanted::UpdateEachFrame() {
     plugin::Call<0x562360>();
+}
+
+// 0x562390
+void CWanted::Initialise() {
+    m_nFlags &= 0xC0;
+    m_nChaosLevel = 0;
+    m_nChaosLevelBeforeParole = 0;
+    m_nLastTimeWantedDecreased = 0;
+    m_nLastTimeWantedLevelChanged = 0;
+    m_nTimeOfParole = 0;
+    m_nCopsInPursuit = 0;
+    m_nMaxCopsInPursuit = 0;
+    m_nMaxCopCarsInPursuit = 0;
+    m_nChanceOnRoadBlock = 0;
+    m_fMultiplier = 1.0f;
+    m_nTimeCounting = 0;
+    m_bLeavePlayerAlone = false;
+    m_nWantedLevel = 0;
+    m_nWantedLevelBeforeParole = 0;
+    m_nCopsBeatingSuspect = 0;
+
+    for (auto& cop : m_pCopsInPursuit) {
+        cop = nullptr;
+    }
+
+    ClearQdCrimes();
+}
+
+// 0x562400
+void CWanted::Reset() {
+    Initialise();
 }
 
 // 0x562410
