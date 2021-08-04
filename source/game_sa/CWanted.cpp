@@ -23,7 +23,7 @@ void CWanted::InjectHooks()
     ReversibleHooks::Install("CWanted", "NumOfHelisRequired", 0x561FA0, &CWanted::NumOfHelisRequired);
     ReversibleHooks::Install("CWanted", "ResetPolicePursuit", 0x561FD0, &CWanted::ResetPolicePursuit);
     ReversibleHooks::Install("CWanted", "ClearQdCrimes", 0x561FE0, &CWanted::ClearQdCrimes);
-    ReversibleHooks::Install("CWanted", "AddCrimeToQ", 0x562000, &CWanted::AddCrimeToQ);
+    //ReversibleHooks::Install("CWanted", "AddCrimeToQ", 0x562000, &CWanted::AddCrimeToQ);
     //ReversibleHooks::Install("CWanted", "ReportCrimeNow", 0x562120, &CWanted::ReportCrimeNow);
     //ReversibleHooks::Install("CWanted", "RemovePursuitCop_func", 0x562300, static_cast<void (*)(CCopPed*, CCopPed**, unsigned char&)>(&CWanted::RemovePursuitCop));
     ReversibleHooks::Install("CWanted", "IsInPursuit", 0x562330, &CWanted::IsInPursuit);
@@ -197,15 +197,15 @@ bool CWanted::AreArmyRequired() const
 // Checks the number of required helicopters depending on wanted level
 // 0x561FA0
 int CWanted::NumOfHelisRequired() {
-    //return plugin::CallMethodAndReturn<int, 0x561FA0, CWanted*>(this);
-    if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff)
+    if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff || m_nWantedLevel < 3)
         return 0;
 
     if (m_nWantedLevel == 3)
         return 1;
-    // WTF?
-    if (m_nWantedLevel <= 3 || m_nWantedLevel > 6)
-        return 0;
+
+    // WTF? This is from the original I don't see any reason to check for more than 6 stars
+    //if (m_nWantedLevel <= 3 || m_nWantedLevel > 6)
+        //return 0;
 
     return 2;
 }
