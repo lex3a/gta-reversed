@@ -245,8 +245,8 @@ void CWanted::RemovePursuitCop(CCopPed* cop, CCopPed** copsArray, unsigned char&
 
 // 0x562330
 bool CWanted::IsInPursuit(CCopPed* cop) {
-    for (auto& elem : m_pCopsInPursuit) {
-        if (elem == cop) {
+    for (auto& pursuitCop : m_pCopsInPursuit) {
+        if (pursuitCop == cop) {
             return true;
         }
     }
