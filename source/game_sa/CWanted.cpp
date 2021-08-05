@@ -27,7 +27,7 @@ void CWanted::InjectHooks()
     //ReversibleHooks::Install("CWanted", "ReportCrimeNow", 0x562120, &CWanted::ReportCrimeNow);
     //ReversibleHooks::Install("CWanted", "RemovePursuitCop_func", 0x562300, static_cast<void (*)(CCopPed*, CCopPed**, unsigned char&)>(&CWanted::RemovePursuitCop));
     ReversibleHooks::Install("CWanted", "IsInPursuit", 0x562330, &CWanted::IsInPursuit);
-    //ReversibleHooks::Install("CWanted", "UpdateEachFrame", 0x562360, &CWanted::UpdateEachFrame);
+    ReversibleHooks::Install("CWanted", "UpdateEachFrame", 0x562360, &CWanted::UpdateEachFrame);
     ReversibleHooks::Install("CWanted", "Initialise", 0x562390, &CWanted::Initialise);
     ReversibleHooks::Install("CWanted", "Reset", 0x562400, &CWanted::Reset);
     //ReversibleHooks::Install("CWanted", "RegisterCrime", 0x562410, &CWanted::RegisterCrime);
@@ -254,9 +254,11 @@ bool CWanted::IsInPursuit(CCopPed* cop) {
     return false;
 }
 
-// Converted from cdecl void CWanted::UpdateEachFrame(void) 0x562360
+/// @brief Checks each frame if we need a news helicopter and adds it if the check is successful (0x562360)
 void CWanted::UpdateEachFrame() {
-    plugin::Call<0x562360>();
+    auto playerWanted = FindPlayerWanted(-1);
+    if (!playerWanted->NumOfHelisRequired())
+        bUseNewsHeliInAdditionToPolice = true;
 }
 
 // 0x562390
