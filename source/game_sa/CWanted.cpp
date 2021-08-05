@@ -40,7 +40,7 @@ void CWanted::InjectHooks()
     //ReversibleHooks::Install("CWanted", "UpdateCrimesQ", 0x562760, &CWanted::UpdateCrimesQ);
     //ReversibleHooks::Install("CWanted", "IsClosestCop", 0x5627D0, &CWanted::IsClosestCop);
     //ReversibleHooks::Install("CWanted", "ComputePursuitCopToDisplace", 0x562B00, &CWanted::ComputePursuitCopToDisplace);
-    //ReversibleHooks::Install("CWanted", "RemovePursuitCop_method", 0x562C10, static_cast<void (CWanted::*)(CCopPed*)>(&CWanted::RemovePursuitCop));
+    ReversibleHooks::Install("CWanted", "RemovePursuitCop_method", 0x562C10, static_cast<void (CWanted::*)(CCopPed*)>(&CWanted::RemovePursuitCop));
     //ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
     //ReversibleHooks::Install("CWanted", "Update", 0x562C90, &CWanted::Update);
     ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_func", 0x562F60, static_cast<bool (*)(CCopPed*, unsigned char, CCopPed**, unsigned char&)>(CWanted::CanCopJoinPursuit));
@@ -380,9 +380,10 @@ CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed* cop, CCopPed** copsArray)
     return plugin::CallAndReturn<CCopPed*, 0x562B00, CCopPed*, CCopPed**>(cop, copsArray);
 }
 
-// Converted from thiscall void CWanted::RemovePursuitCop(CCopPed *cop) 0x562C10
+/// @brief Removes cop from current cops in pursuit (0x562C10)
+/// @param cop Cop to remove
 void CWanted::RemovePursuitCop(CCopPed* cop) {
-    plugin::CallMethod<0x562C10, CWanted*, CCopPed*>(this, cop);
+    RemovePursuitCop(cop, m_pCopsInPursuit, m_nCopsInPursuit);
 }
 
 // Converted from thiscall void CWanted::RemoveExcessPursuitCops(void) 0x562C40
