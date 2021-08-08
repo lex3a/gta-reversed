@@ -41,7 +41,7 @@ void CWanted::InjectHooks()
     //ReversibleHooks::Install("CWanted", "IsClosestCop", 0x5627D0, &CWanted::IsClosestCop);
     //ReversibleHooks::Install("CWanted", "ComputePursuitCopToDisplace", 0x562B00, &CWanted::ComputePursuitCopToDisplace);
     ReversibleHooks::Install("CWanted", "RemovePursuitCop_method", 0x562C10, static_cast<void (CWanted::*)(CCopPed*)>(&CWanted::RemovePursuitCop));
-    //ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
+    ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
     //ReversibleHooks::Install("CWanted", "Update", 0x562C90, &CWanted::Update);
     ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_func", 0x562F60, static_cast<bool (*)(CCopPed*, unsigned char, CCopPed**, unsigned char&)>(CWanted::CanCopJoinPursuit));
     // ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_method", 0x562FB0, static_cast<bool (CWanted::*)(CCopPed*)>(&CWanted::CanCopJoinPursuit));
@@ -61,7 +61,6 @@ void CWanted::InitialiseStaticVariables()
 
 // Converted from thiscall void CWanted::UpdateWantedLevel(void) 0x561C90
 void CWanted::UpdateWantedLevel() {
-    //plugin::CallMethod<0x561C90, CWanted*>(this);
     m_nChaosLevel = std::min(m_nChaosLevel, MaximumChaosLevel);
 
     unsigned int wantedLevel = m_nWantedLevel;
@@ -167,35 +166,30 @@ void CWanted::SetMaximumWantedLevel(int level)
     }
 }
 
-// Vice City leftover
-// 0x561F30
+/// @brief Vice City leftover. Checks if miami vice is needed after three wanted level stars (0x561F30)
 bool CWanted::AreMiamiViceRequired() {
     return m_nWantedLevel >= 3;
 }
 
-// Checks if SWAT is needed after four wanted level stars
-// 0x561F40
+/// @brief Checks if SWAT is needed after four wanted level stars (0x561F40)
 bool CWanted::AreSwatRequired() const
 {
     return m_nWantedLevel == 4 || m_bSwatRequired;
 }
 
-// Checks if FBI is needed after five wanted level stars
-// 0x561F60
+/// @brief Checks if FBI is needed after five wanted level stars (0x561F60)
 bool CWanted::AreFbiRequired() const
 {
     return m_nWantedLevel == 5 || m_bFbiRequired;
 }
 
-// Checks if Army is needed after six wanted level stars
-// 0x561F80
+/// @brief Checks if Army is needed after six wanted level stars (0x561F80)
 bool CWanted::AreArmyRequired() const
 {
     return m_nWantedLevel == 6 || m_bArmyRequired;
 }
 
-// Checks the number of required helicopters depending on wanted level
-// 0x561FA0
+/// @brief Checks the number of required helicopters depending on wanted level (0x561FA0)
 int CWanted::NumOfHelisRequired() {
     if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff || m_nWantedLevel < 3)
         return 0;
@@ -243,7 +237,8 @@ void CWanted::RemovePursuitCop(CCopPed* cop, CCopPed** copsArray, unsigned char&
     plugin::Call<0x562300, CCopPed*, CCopPed**, unsigned char&>(cop, copsArray, copsCounter);
 }
 
-// 0x562330
+/// @brief Checks if cop is in pursuit (0x562330)
+/// @param cop Cop to check
 bool CWanted::IsInPursuit(CCopPed* cop) {
     for (auto& pursuitCop : m_pCopsInPursuit) {
         if (pursuitCop == cop) {
@@ -261,7 +256,7 @@ void CWanted::UpdateEachFrame() {
         bUseNewsHeliInAdditionToPolice = true;
 }
 
-// 0x562390
+/// @brief Initialise all member variables (0x562390)
 void CWanted::Initialise() {
     m_nFlags &= 0xC0;
     m_nChaosLevel = 0;
@@ -382,15 +377,18 @@ CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed* cop, CCopPed** copsArray)
     return plugin::CallAndReturn<CCopPed*, 0x562B00, CCopPed*, CCopPed**>(cop, copsArray);
 }
 
-/// @brief Removes cop from current cops in pursuit (0x562C10)
+/// @brief Removes cop from the current cops in pursuit (0x562C10)
 /// @param cop Cop to remove
 void CWanted::RemovePursuitCop(CCopPed* cop) {
     RemovePursuitCop(cop, m_pCopsInPursuit, m_nCopsInPursuit);
 }
 
-// Converted from thiscall void CWanted::RemoveExcessPursuitCops(void) 0x562C40
+/// @brief Removes excess cops in pursuit (0x562C40)
 void CWanted::RemoveExcessPursuitCops() {
-    plugin::CallMethod<0x562C40, CWanted*>(this);
+    while (m_nCopsInPursuit > m_nMaxCopsInPursuit) {
+        CCopPed* copToDisplace = ComputePursuitCopToDisplace(nullptr, m_pCopsInPursuit);
+        RemovePursuitCop(copToDisplace);
+    }
 }
 
 // 0x562C90
