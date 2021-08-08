@@ -44,7 +44,7 @@ void CWanted::InjectHooks()
     ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
     //ReversibleHooks::Install("CWanted", "Update", 0x562C90, &CWanted::Update);
     ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_func", 0x562F60, static_cast<bool (*)(CCopPed*, unsigned char, CCopPed**, unsigned char&)>(CWanted::CanCopJoinPursuit));
-    // ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_method", 0x562FB0, static_cast<bool (CWanted::*)(CCopPed*)>(&CWanted::CanCopJoinPursuit));
+    ReversibleHooks::Install("CWanted", "CanCopJoinPursuit_method", 0x562FB0, static_cast<bool (CWanted::*)(CCopPed*)>(&CWanted::CanCopJoinPursuit));
     //ReversibleHooks::Install("CWanted", "SetPursuitCop", 0x563060, &CWanted::SetPursuitCop);
 
 }
@@ -416,7 +416,11 @@ bool CWanted::CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCo
 
 // 0x562FB0
 bool CWanted::CanCopJoinPursuit(CCopPed* cop) {
-    return plugin::CallMethodAndReturn<bool, 0x562FB0, CWanted*, CCopPed*>(this, cop);
+    //return plugin::CallMethodAndReturn<bool, 0x562FB0, CWanted*, CCopPed*>(this, cop);
+    if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff)
+        return 0;
+
+    return CanCopJoinPursuit(cop, m_nMaxCopsInPursuit, m_pCopsInPursuit, m_nCopsInPursuit);
 }
 
 // Converted from thiscall bool CWanted::SetPursuitCop(CCopPed *cop) 0x563060
