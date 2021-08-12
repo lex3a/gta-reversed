@@ -61,15 +61,11 @@ void CWanted::InitialiseStaticVariables()
 
 // Converted from thiscall void CWanted::UpdateWantedLevel(void) 0x561C90
 void CWanted::UpdateWantedLevel() {
-    // TODO
-    // Find the bug. It sets 5 wanted stars instead of 6 when you use
-    // max wanted level cheat. Also you can get more than 4 stars in
-    // the begginning of the game
     m_nChaosLevel = std::min(m_nChaosLevel, MaximumChaosLevel);
 
     unsigned int wantedLevel = m_nWantedLevel;
 
-    if (m_nChaosLevel > 4800) {
+    if (m_nChaosLevel > 4600) {
         CStats::IncrementStat(STAT_TOTAL_NUMBER_OF_WANTED_STARS_ATTAINED, (float)(6 - wantedLevel));
         m_nWantedLevel = 6;
         m_nMaxCopCarsInPursuit = 3;
