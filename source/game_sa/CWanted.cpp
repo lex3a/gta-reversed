@@ -39,7 +39,7 @@ void CWanted::InjectHooks()
     //ReversibleHooks::Install("CWanted", "WorkOutPolicePresence", 0x5625F0, &CWanted::WorkOutPolicePresence);
     //ReversibleHooks::Install("CWanted", "UpdateCrimesQ", 0x562760, &CWanted::UpdateCrimesQ);
     //ReversibleHooks::Install("CWanted", "IsClosestCop", 0x5627D0, &CWanted::IsClosestCop);
-    //ReversibleHooks::Install("CWanted", "ComputePursuitCopToDisplace", 0x562B00, &CWanted::ComputePursuitCopToDisplace);
+    ReversibleHooks::Install("CWanted", "ComputePursuitCopToDisplace", 0x562B00, &CWanted::ComputePursuitCopToDisplace);
     ReversibleHooks::Install("CWanted", "RemovePursuitCop_method", 0x562C10, static_cast<void (CWanted::*)(CCopPed*)>(&CWanted::RemovePursuitCop));
     ReversibleHooks::Install("CWanted", "RemoveExcessPursuitCops", 0x562C40, &CWanted::RemoveExcessPursuitCops);
     //ReversibleHooks::Install("CWanted", "Update", 0x562C90, &CWanted::Update);
@@ -61,6 +61,10 @@ void CWanted::InitialiseStaticVariables()
 
 // Converted from thiscall void CWanted::UpdateWantedLevel(void) 0x561C90
 void CWanted::UpdateWantedLevel() {
+    // TODO
+    // Find the bug. It sets 5 wanted stars instead of 6 when you use
+    // max wanted level cheat. Also you can get more than 4 stars in
+    // the begginning of the game
     m_nChaosLevel = std::min(m_nChaosLevel, MaximumChaosLevel);
 
     unsigned int wantedLevel = m_nWantedLevel;
@@ -372,9 +376,38 @@ bool CWanted::IsClosestCop(CPed* ped, int numCopsToCheck) {
     return plugin::CallMethodAndReturn<bool, 0x5627D0, CWanted*, CPed*, int>(this, ped, numCopsToCheck);
 }
 
-// Converted from cdecl CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed *cop,CCopPed **copsArray) 0x562B00
-CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed* cop, CCopPed** copsArray) {
-    return plugin::CallAndReturn<CCopPed*, 0x562B00, CCopPed*, CCopPed**>(cop, copsArray);
+/// @brief Computes cop to displace in a current pursuit (0x562B00)
+/// @param cop Target cop if needed
+/// @param copsArray All cops in a pursuit
+/// @return Displaced cop
+CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed* cop, CCopPed** copsArray) {       
+    CCopPed* displacedCop = nullptr;
+    float distanceToTargetCop = 1.0;
+    float distanceToCopInPursuit;
+    CVector playerPos = FindPlayerPed()->GetPosition();
+
+    if (cop) {
+        CVector targetCopPos = cop->GetPosition();
+        distanceToTargetCop = DistanceBetweenPointsSquared(targetCopPos, playerPos);
+        if (distanceToTargetCop < 1.0)
+            distanceToTargetCop = 1.0;
+    }
+
+    for (int32_t i = 0; i < 10; ++i) {
+        CCopPed* currentCop = copsArray[i];
+        if (currentCop) {          
+            if (!currentCop->IsAlive())
+                return currentCop;
+
+            CVector currentCopPos = currentCop->GetPosition();
+            distanceToCopInPursuit = DistanceBetweenPointsSquared(currentCopPos, playerPos);
+            if (distanceToCopInPursuit > distanceToTargetCop) {
+                displacedCop = currentCop;
+                distanceToTargetCop = distanceToCopInPursuit;
+            }
+        }
+    }
+    return displacedCop;
 }
 
 /// @brief Removes cop from the current cops in pursuit (0x562C10)
@@ -417,6 +450,7 @@ bool CWanted::CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCo
 // 0x562FB0
 bool CWanted::CanCopJoinPursuit(CCopPed* cop) {
     //return plugin::CallMethodAndReturn<bool, 0x562FB0, CWanted*, CCopPed*>(this, cop);
+    // There is a bug somewhere :(
     if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff)
         return 0;
 
