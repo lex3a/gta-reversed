@@ -97,6 +97,8 @@ public:
     static bool CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCopPed** copsArray, unsigned char& copsCounter);
     bool CanCopJoinPursuit(CCopPed* cop);
     bool SetPursuitCop(CCopPed* cop);
+    //NOT SA
+    bool IsIgnored(void) { return m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff; }
 };
 
 VALIDATE_SIZE(CWanted, 0x29C);

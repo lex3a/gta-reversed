@@ -120,7 +120,7 @@ void CWanted::UpdateWantedLevel() {
     if (wantedLevel != m_nWantedLevel)
         m_nLastTimeWantedLevelChanged = CTimer::m_snTimeInMilliseconds;
 
-    if (m_bEverybodyBackOff || m_bPoliceBackOff || m_bPoliceBackOffGarage) {
+    if (IsIgnored()) {
         m_nMaxCopCarsInPursuit = 0;
         m_nMaxCopsInPursuit = 0;
         m_nChanceOnRoadBlock = 0;
@@ -191,7 +191,7 @@ bool CWanted::AreArmyRequired() const
 
 /// @brief Checks the number of required helicopters depending on wanted level (0x561FA0)
 int CWanted::NumOfHelisRequired() {
-    if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff || m_nWantedLevel < 3)
+    if (IsIgnored() || m_nWantedLevel < 3)
         return 0;
 
     if (m_nWantedLevel == 3)
@@ -447,8 +447,8 @@ bool CWanted::CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCo
 bool CWanted::CanCopJoinPursuit(CCopPed* cop) {
     //return plugin::CallMethodAndReturn<bool, 0x562FB0, CWanted*, CCopPed*>(this, cop);
     // There is a bug somewhere :(
-    if (m_bPoliceBackOff || m_bPoliceBackOffGarage || m_bEverybodyBackOff)
-        return 0;
+    if (IsIgnored())
+        return false;
 
     return CanCopJoinPursuit(cop, m_nMaxCopsInPursuit, m_pCopsInPursuit, m_nCopsInPursuit);
 }
