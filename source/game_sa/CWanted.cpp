@@ -25,7 +25,7 @@ void CWanted::InjectHooks()
     ReversibleHooks::Install("CWanted", "ClearQdCrimes", 0x561FE0, &CWanted::ClearQdCrimes);
     //ReversibleHooks::Install("CWanted", "AddCrimeToQ", 0x562000, &CWanted::AddCrimeToQ);
     //ReversibleHooks::Install("CWanted", "ReportCrimeNow", 0x562120, &CWanted::ReportCrimeNow);
-    //ReversibleHooks::Install("CWanted", "RemovePursuitCop_func", 0x562300, static_cast<void (*)(CCopPed*, CCopPed**, unsigned char&)>(&CWanted::RemovePursuitCop));
+    ReversibleHooks::Install("CWanted", "RemovePursuitCop_func", 0x562300, static_cast<void (*)(CCopPed*, CCopPed**, unsigned char&)>(&CWanted::RemovePursuitCop));
     ReversibleHooks::Install("CWanted", "IsInPursuit", 0x562330, &CWanted::IsInPursuit);
     ReversibleHooks::Install("CWanted", "UpdateEachFrame", 0x562360, &CWanted::UpdateEachFrame);
     ReversibleHooks::Install("CWanted", "Initialise", 0x562390, &CWanted::Initialise);
