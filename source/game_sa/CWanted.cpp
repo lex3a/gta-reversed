@@ -232,9 +232,18 @@ void CWanted::ReportCrimeNow(eCrimeType crimeType, const CVector& posn, bool bPo
     plugin::CallMethod<0x562120, CWanted*, eCrimeType, const CVector&, bool>(this, crimeType, posn, bPoliceDontReallyCare);
 }
 
-// Converted from cdecl void CWanted::RemovePursuitCop(CCopPed *cop,CCopPed **copsArray,uchar &copsCounter) 0x562300
+/// @brief Removes cop from the current cops in pursuit (0x562300)
+/// @param cop Cop to remove
+/// @param copsArray Array with the current cops
+/// @param copsCounter Current amount of cops in the pursuit
 void CWanted::RemovePursuitCop(CCopPed* cop, CCopPed** copsArray, unsigned char& copsCounter) {
-    plugin::Call<0x562300, CCopPed*, CCopPed**, unsigned char&>(cop, copsArray, copsCounter);
+    for (int i = 0; i < 10; i++) {
+        if (copsArray[i] == cop) {
+            copsArray[i] = NULL;
+            copsCounter--;
+        }
+    }
+
 }
 
 /// @brief Checks if cop is in pursuit (0x562330)
@@ -372,9 +381,9 @@ bool CWanted::IsClosestCop(CPed* ped, int numCopsToCheck) {
     return plugin::CallMethodAndReturn<bool, 0x5627D0, CWanted*, CPed*, int>(this, ped, numCopsToCheck);
 }
 
-/// @brief Computes cop to displace in a current pursuit (0x562B00)
+/// @brief Computes cop to displace in the current pursuit (0x562B00)
 /// @param cop Target cop if needed
-/// @param copsArray All cops in a pursuit
+/// @param copsArray All cops in the pursuit
 /// @return Displaced cop
 CCopPed* CWanted::ComputePursuitCopToDisplace(CCopPed* cop, CCopPed** copsArray) {       
     CCopPed* displacedCop = nullptr;
