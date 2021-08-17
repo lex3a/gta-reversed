@@ -425,7 +425,12 @@ void CWanted::Update() {
     plugin::CallMethod<0x562C90, CWanted*>(this);
 }
 
-// 0x562F60
+/// @brief Checks if the cop can join the pursuit (0x562F60)
+/// @param target Cop to check
+/// @param maxCopsCount Max cops in the pursuit
+/// @param copsArray Array with the current cops
+/// @param copsCounter Current amount of cops in the pursuit
+/// @returns Whether or not the cop is able to join
 bool CWanted::CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCopPed** copsArray, unsigned char& copsCounter) {
     if (!maxCopsCount)
         return false;
@@ -443,14 +448,22 @@ bool CWanted::CanCopJoinPursuit(CCopPed* target, unsigned char maxCopsCount, CCo
     return false;
 }
 
-// 0x562FB0
+/// @brief Checks if the cop can join the pursuit (0x562FB0)
+/// @param cop Cop to check
+/// @returns Whether or not the cop is able to join
 bool CWanted::CanCopJoinPursuit(CCopPed* cop) {
-    //return plugin::CallMethodAndReturn<bool, 0x562FB0, CWanted*, CCopPed*>(this, cop);
-    // There is a bug somewhere :(
     if (IsIgnored())
         return false;
 
-    return CanCopJoinPursuit(cop, m_nMaxCopsInPursuit, m_pCopsInPursuit, m_nCopsInPursuit);
+    uint8_t maxCopsCount = m_nMaxCopsInPursuit;  
+    uint8_t copsCounter = m_nCopsInPursuit; 
+    CCopPed* copsArray[10];
+
+    for (int i = 0; i < 10; i++) {
+        copsArray[i] = m_pCopsInPursuit[i];
+    }
+
+    return CanCopJoinPursuit(cop, maxCopsCount, copsArray, copsCounter);
 }
 
 // Converted from thiscall bool CWanted::SetPursuitCop(CCopPed *cop) 0x563060
