@@ -265,6 +265,7 @@ void InjectHooksMain()
     CTimeCycle::InjectHooks();
     CSkidmarks::InjectHooks();
     CMovingThings::InjectHooks();
+    CPlaneTrails::InjectHooks();
     CRoadBlocks::InjectHooks();
     CBridge::InjectHooks();
     CCranes::InjectHooks();
