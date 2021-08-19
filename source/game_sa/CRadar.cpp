@@ -108,8 +108,8 @@ char* CRadar::RadarBlipFileNames[][2] = {
 eRadarTraceHeight& CRadar::legendTraceHeight = *(eRadarTraceHeight*)0xBAA350;
 unsigned int& CRadar::legendTraceTimer = *(unsigned int*)0xBAA354;
 
-unsigned int CRadar::mapYouAreHereTimer = 0; //0xBAA358
-bool CRadar::mapYouAreHereDisplay = true; //0x8D0930
+unsigned int& CRadar::mapYouAreHereTimer = *(unsigned int*)0xBAA358;
+bool& CRadar::mapYouAreHereDisplay = *(bool*)0x8D0930;
 
 #define RADAR_MIN_RANGE (180.0f)
 #define RADAR_MAX_RANGE (350.0f)
@@ -234,13 +234,13 @@ int CRadar::GetActualBlipArrayIndex(int blipIndex)
     if (blipIndex == -1)
         return -1;
 
-    auto blip16 = (unsigned short)blipIndex;
-    auto blipHiWord = (blipIndex >> 16) & RwUInt16MAXVAL;
-    tRadarTrace& trace = ms_RadarTrace[blip16];
-    if (blipHiWord != trace.m_nCounter || !trace.m_bTrackingBlip)
+    uint16_t traceIndex = (uint16_t)blipIndex;
+    uint16_t counter = blipIndex >> 16;
+    tRadarTrace& trace = ms_RadarTrace[traceIndex];
+    if (counter != trace.m_nCounter || !trace.m_bTrackingBlip)
         return -1;
 
-    return blip16;
+    return traceIndex;
 }
 
 // 0x5828A0
@@ -631,7 +631,7 @@ void CRadar::CalculateCachedSinCos()
         return;
     }
 
-    if (TheCamera.GetLookDirection() == LOOKING_DIRECTION_UNKNOWN_3) {
+    if (TheCamera.GetLookDirection() == LOOKING_DIRECTION_FORWARD) {
         float angle;
 
         if (TheCamera.m_matrix) {
@@ -664,9 +664,7 @@ void CRadar::CalculateCachedSinCos()
     }
     else {
         auto entityPosn = targetEntity->GetPosition();
-        in.x = entityPosn.x - activeCam.m_vecSourceBeforeLookBehind.x;
-        in.y = entityPosn.y - activeCam.m_vecSourceBeforeLookBehind.y;
-        in.z = entityPosn.z - activeCam.m_vecSourceBeforeLookBehind.z;
+        in = entityPosn - activeCam.m_vecSourceBeforeLookBehind;
     }
 
     float angle = atan2(-in.x, in.y);
@@ -754,7 +752,7 @@ void CRadar::ChangeBlipDisplay(int blipIndex, eBlipDisplay blipDisplay)
     if (index == -1)
         return;
 
-    ms_RadarTrace[index].m_bTrackingBlip = (blipDisplay == BLIP_DISPLAY_BLIPONLY) || (blipDisplay == BLIP_DISPLAY_BOTH);
+    ms_RadarTrace[index].m_nBlipDisplayFlag = blipDisplay;
 }
 
 // 0x583D70
@@ -1201,7 +1199,6 @@ void CRadar::DrawMap()
     CPlayerPed* player = FindPlayerPed(-1);
     bool mapShouldDrawn = !CGame::currArea && player->m_nAreaCode == 0 && FrontEndMenuManager.m_nRadarMode != 1;
 
-    CalculateCachedSinCos();
     CalculateCachedSinCos();
 
     CVehicle* vehicle = FindPlayerVehicle(-1, false);

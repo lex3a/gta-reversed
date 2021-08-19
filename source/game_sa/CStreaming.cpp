@@ -1169,7 +1169,7 @@ void CStreaming::LoadZoneVehicle(const CVector& point) {
 // 0x40BA70
 void CStreaming::PossiblyStreamCarOutAfterCreation(int modelId) {
     if (CModelInfo::ms_modelInfoPtrs[modelId]->m_nFlags & STREAMING_UNKNOWN_1) {
-        if (rand() & 1)
+        if (rand() % 2)
             SetModelIsDeletable(modelId);
     }
 }
@@ -2186,8 +2186,8 @@ void CStreaming::ProcessEntitiesInSectorList(CPtrList& list, float posX, float p
                     && !pEntity->m_bDontStream && pEntity->m_bIsVisible)
                 {
                     CBaseModelInfo* pModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
-                    tTimeInfo* timeInfo = pModelInfo->GetTimeInfo();
-                    if (!timeInfo || CClock::GetIsTimeInRange(timeInfo->m_nTimeOn, timeInfo->m_nTimeOff)) {
+                    CTimeInfo* timeInfo = pModelInfo->GetTimeInfo();
+                    if (!timeInfo || CClock::GetIsTimeInRange(timeInfo->GetTimeOn(), timeInfo->GetTimeOff())) {
                         float drawDistanceRadius = TheCamera.m_fLODDistMultiplier * pModelInfo->m_fDrawDistance;
                         float squaredDrawDistanceRadius = drawDistanceRadius * drawDistanceRadius;
                         if (squaredRadius >= squaredDrawDistanceRadius)
@@ -2221,8 +2221,8 @@ void CStreaming::ProcessEntitiesInSectorList(CPtrList& list, std::int32_t stream
                     && !pEntity->m_bDontStream && pEntity->m_bIsVisible)
                 {
                     CBaseModelInfo* pModelInfo = CModelInfo::ms_modelInfoPtrs[modelId];
-                    tTimeInfo* pTimeInfo = pModelInfo->GetTimeInfo();
-                    if (!pTimeInfo || CClock::GetIsTimeInRange(pTimeInfo->m_nTimeOn, pTimeInfo->m_nTimeOff))
+                    CTimeInfo* pTimeInfo = pModelInfo->GetTimeInfo();
+                    if (!pTimeInfo || CClock::GetIsTimeInRange(pTimeInfo->GetTimeOn(), pTimeInfo->GetTimeOff()))
                     {
                         if (pModelInfo->m_pRwObject && !pEntity->m_pRwObject)
                             pEntity->CreateRwObject();
@@ -2800,7 +2800,7 @@ void CStreaming::StreamOneNewCar() {
         return;
     }
     if (m_bBoatsNeeded && (CPopulation::m_LoadedBoats.CountMembers() < 2 ||
-        CPopulation::m_LoadedBoats.CountMembers() <= 2 && (rand() & 7) == 3)) {
+        CPopulation::m_LoadedBoats.CountMembers() <= 2 && (rand() % 8) == 3)) {
         std::int32_t carModelId = CCarCtrl::ChooseCarModelToLoad(POPCYCLE_CARGROUP_BOATS);
         if (carModelId >= 0) {
             RequestModel(carModelId, STREAMING_KEEP_IN_MEMORY);

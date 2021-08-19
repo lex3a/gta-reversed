@@ -811,8 +811,9 @@ bool CAutomobile::ProcessAI(unsigned int& extraHandlingFlags)
     m_autoPilot.carCtrlFlags.bHonkAtPed = false;
     if (recordingId >= 0 && !CVehicleRecording::bUseCarAI[recordingId])
         return false;
+
     eCarMission carMission = m_autoPilot.m_nCarMission;
-    CAutomobile* playerVehicle = FindPlayerVehicle(-1, false);
+    CVehicle* playerVehicle = FindPlayerVehicle(-1, false);
     if (playerVehicle && playerVehicle != this && FindPlayerWanted()->m_nWantedLevel > 3
         && (carMission == MISSION_RAMPLAYER_FARAWAY
             || carMission == MISSION_BLOCKPLAYER_FARAWAY
@@ -2490,6 +2491,7 @@ inline void CAutomobile::ProcessPedInVehicleBuoyancy(CPed* pPed, bool bIsDriver)
     }
 }
 
+// 0x6A9680
 void CAutomobile::ProcessHarvester()
 {
     if (m_nStatus == STATUS_PLAYER) {
@@ -2542,7 +2544,7 @@ void CAutomobile::ProcessHarvester()
         CVector pos = *m_matrix * CVector(-1.2f, -3.8f, 1.5f);
         CVector velocity = GetForward() * -0.1f;
         velocity.x += CGeneral::GetRandomNumberInRange(0.05f, -0.05f);
-        velocity.y = CGeneral::GetRandomNumberInRange(0.05f, -0.05f);
+        velocity.y += CGeneral::GetRandomNumberInRange(0.05f, -0.05f);
         int32_t bodyPartModelId = -1;
         switch (m_harvesterParticleCounter - 1)
         {
@@ -3069,7 +3071,7 @@ void CAutomobile::FireTruckControl(CFire* fire)
         newTurretPosition += GetSpeed(newTurretPosition - GetPosition()) * CTimer::ms_fTimeStep;
     }
 
-    point.z += (rand() & 0xF) * 0.001f;
+    point.z += (rand() % 16) * 0.001f;
     CVector endPoint = m_vecMoveSpeed * CVector(1.0f, 1.0f, 0.3f);
     if (ModelIndices::IsSwatVan(m_nModelIndex))
         endPoint += point * 0.4f;

@@ -500,7 +500,8 @@ void CVehicleModelInfo::SetRenderPipelines()
         return;
 
     carFrame = RwFrameCreate();
-    RwMatrixRotate(RwFrameGetMatrix(carFrame), &CVector(1.0F, 0.0f, 0.0f), 60.0F, RwOpCombineType::rwCOMBINEREPLACE);
+    const CVector axis{1.0F, 0.0f, 0.0f};
+    RwMatrixRotate(RwFrameGetMatrix(carFrame), &axis, 60.0F, RwOpCombineType::rwCOMBINEREPLACE);
     RwFrameUpdateObjects(carFrame);
     RwFrameGetLTM(carFrame);
 }
@@ -1096,13 +1097,13 @@ RpAtomic* CVehicleModelInfo::SetAtomicRendererCB_Train(RpAtomic* atomic, void* d
 
 RwObject* CVehicleModelInfo::SetAtomicFlagCB(RwObject* object, void* data)
 {
-    CVisibilityPlugins::SetAtomicFlag(reinterpret_cast<RpAtomic*>(object), reinterpret_cast<uint16_t>(data));
+    CVisibilityPlugins::SetAtomicFlag(reinterpret_cast<RpAtomic*>(object), (uint16_t)data);
     return object;
 }
 
 RwObject* CVehicleModelInfo::ClearAtomicFlagCB(RwObject* object, void* data)
 {
-    CVisibilityPlugins::ClearAtomicFlag(reinterpret_cast<RpAtomic*>(object), reinterpret_cast<uint16_t>(data));
+    CVisibilityPlugins::ClearAtomicFlag(reinterpret_cast<RpAtomic*>(object), (uint16_t)data);
     return object;
 }
 
@@ -1157,7 +1158,7 @@ RpMaterial* CVehicleModelInfo::GetMatFXEffectMaterialCB(RpMaterial* material, vo
 
 RpMaterial* CVehicleModelInfo::SetEnvironmentMapCB(RpMaterial* material, void* data)
 {
-    if (reinterpret_cast<uint16_t>(data) == 0xFFFF) {
+    if ((uint16_t)data == 0xFFFF) {
         RpMatFXMaterialSetEffects(material, RpMatFXMaterialFlags::rpMATFXEFFECTNULL);
         return material;
     }

@@ -538,7 +538,7 @@ void CEntity::PreRender_Reversed()
 
         auto vecCamPos = CVector2D(TheCamera.GetPosition());
         auto vecEntPos = CVector2D(GetPosition());
-        auto fDist = DistanceBetweenPoints(vecCamPos, vecEntPos);
+        auto fDist = DistanceBetweenPoints2D(vecCamPos, vecEntPos);
         CObject::fDistToNearestTree = std::min(CObject::fDistToNearestTree, fDist);
         CEntity::ModifyMatrixForTreeInWind();
     }
@@ -578,7 +578,7 @@ void CEntity::PreRender_Reversed()
         else if (m_nModelIndex == eModelID::MODEL_MISSILE) {
             if (CReplay::Mode != REPLAY_MODE_1) {
                 CVector vecPos = GetPosition();
-                auto fRand = static_cast<float>(rand() & 0xF) / 16.0F;
+                auto fRand = static_cast<float>(rand() % 16) / 16.0F;
                 CShadows::StoreShadowToBeRendered(eShadowTextureType::SHADOWTEX_PED,
                                                   gpShadowExplosionTex,
                                                   &vecPos,
@@ -632,7 +632,7 @@ void CEntity::PreRender_Reversed()
         }
         else if (m_nModelIndex == ModelIndices::MI_FLARE) {
             CVector vecPos = GetPosition();
-            auto fRand = static_cast<float>(rand() & 0xF) / 16.0F;
+            auto fRand = static_cast<float>(rand() % 16) / 16.0F;
             fRand = std::max(fRand, 0.5F);
             CShadows::StoreShadowToBeRendered(eShadowTextureType::SHADOWTEX_PED,
                                               gpShadowExplosionTex,
@@ -1244,9 +1244,11 @@ void CEntity::CreateEffects()
 
             auto pFrame = RpAtomicGetFrame(pSignAtomic);
             RwFrameSetIdentity(pFrame);
-            RwFrameRotate(pFrame, &CVector(0.0F, 0.0F, 1.0F), pEffect->roadsign.m_vecRotation.z, RwOpCombineType::rwCOMBINEREPLACE);
-            RwFrameRotate(pFrame, &CVector(1.0F, 0.0F, 0.0F), pEffect->roadsign.m_vecRotation.x, RwOpCombineType::rwCOMBINEPOSTCONCAT);
-            RwFrameRotate(pFrame, &CVector(0.0F, 1.0F, 0.0F), pEffect->roadsign.m_vecRotation.y, RwOpCombineType::rwCOMBINEPOSTCONCAT);
+
+            const CVector axis0{1.0F, 0.0F, 0.0F}, axis1{0.0F, 1.0F, 0.0F}, axis2{0.0F, 0.0F, 1.0F};
+            RwFrameRotate(pFrame, &axis2, pEffect->roadsign.m_vecRotation.z, RwOpCombineType::rwCOMBINEREPLACE);
+            RwFrameRotate(pFrame, &axis0, pEffect->roadsign.m_vecRotation.x, RwOpCombineType::rwCOMBINEPOSTCONCAT);
+            RwFrameRotate(pFrame, &axis1, pEffect->roadsign.m_vecRotation.y, RwOpCombineType::rwCOMBINEPOSTCONCAT);
             RwFrameTranslate(pFrame, &pEffect->m_vecPosn, RwOpCombineType::rwCOMBINEPOSTCONCAT);
             RwFrameUpdateObjects(pFrame);
             pEffect->roadsign.m_pAtomic = pSignAtomic;
@@ -2125,7 +2127,10 @@ void CEntity::ProcessLightsForEntity()
             auto bCanCreateLight = true;
             if (pEffect->light.m_bCheckDirection) {
                 const auto& camPos = TheCamera.GetPosition();
-                auto vecLightPos = Multiply3x3(GetMatrix(), CVector(pEffect->light.offsetX, pEffect->light.offsetY, pEffect->light.offsetZ));
+                CVector lightOffset{static_cast<float>(pEffect->light.offsetX),
+                                    static_cast<float>(pEffect->light.offsetY),
+                                    static_cast<float>(pEffect->light.offsetZ)};
+                auto vecLightPos = Multiply3x3(GetMatrix(), lightOffset);
 
                 auto fDot = DotProduct(vecLightPos, (camPos - vecEffPos));
                 bCanCreateLight = fDot >= 0.0F;
@@ -2135,7 +2140,7 @@ void CEntity::ProcessLightsForEntity()
                 bSkipCoronaChecks = true;
                 auto fBrightness = fIntensity;
                 if (pEffect->light.m_bBlinking1)
-                    fBrightness = (1.0F - (rand() & 0x1F) * 0.012F) * fIntensity;
+                    fBrightness = (1.0F - (rand() % 32) * 0.012F) * fIntensity;
 
                 if (pEffect->light.m_bBlinking2 && (CTimer::m_FrameCounter + uiRand) & 3)
                     fBrightness = 0.0F;
@@ -2475,6 +2480,6 @@ RpAtomic* CEntity::SetAtomicAlphaCB(RpAtomic* pAtomic, void* pData)
 
 RpMaterial* CEntity::SetMaterialAlphaCB(RpMaterial* pMaterial, void* pData)
 {
-    pMaterial->color.alpha = reinterpret_cast<RwUInt8>(pData);
+    pMaterial->color.alpha = (RwUInt8)pData;
     return pMaterial;
 }

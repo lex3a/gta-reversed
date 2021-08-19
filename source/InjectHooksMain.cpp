@@ -38,6 +38,7 @@ void InjectHooksMain()
 {
     // WaitForDebugger();
 
+    CPedTaskPair::InjectHooks();
     CDebug::InjectHooks();
     InjectCommonHooks();
     CGame::InjectHooks();
@@ -77,6 +78,7 @@ void InjectHooksMain()
     CDamageAtomicModelInfo::InjectHooks();
     CWeaponModelInfo::InjectHooks();
     CPedModelInfo::InjectHooks();
+    CTimeInfo::InjectHooks();
     SurfaceInfos_c::InjectHooks();
     CFileLoader::InjectHooks();
     CFileMgr::InjectHooks();
@@ -224,6 +226,7 @@ void InjectHooksMain()
     CWaterLevel::InjectHooks();
     cBuoyancy::InjectHooks();
     CWanted::InjectHooks();
+    CEscalators::InjectHooks();
     CWeapon::InjectHooks();
     CWorld::InjectHooks();
     cTransmission::InjectHooks();
